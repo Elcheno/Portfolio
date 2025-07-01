@@ -1,0 +1,164 @@
+---
+
+const navLinks = [
+  { label: 'Home', href: '/', id: 'home' },
+  { label: 'About', href: '/about', id: 'about' },
+  { label: 'Contact', href: '/contact', id: 'contact' }
+]
+---
+
+<section class="fixed top-0 w-full">
+  <nav class="w-full flex justify-center items-center mt-8">
+    <ul class="list-none flex gap-4 rounded-full p-2 relative" id="nav-links">
+      {
+        navLinks.map((link) => (
+          <li class="py-3 px-6 hover:cursor-pointer" id={link.id}>
+            <a href={link.href} class="">{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+    <div
+      id="nav-border-background"
+      style={`
+        width: calc(var(--nav-width) - 20px);
+        top: calc(var(--nav-top) + 60px);
+        left: calc(var(--nav-left));
+      `}
+      class="absolute z-[-1] transition-all duration-200 ease-in-out rounded-full h-[5px] ml-[10px]"
+    ></div>
+  </nav>
+  <div
+    id="nav-background"
+    style={`
+      height: var(--nav-height);
+      width: var(--nav-width);
+      top: var(--nav-top);
+      left: var(--nav-left);
+      opacity: var(--nav-opacity);
+    `}
+    class="absolute z-[-1] transition-all duration-200 ease-in-out rounded-full"
+  ></div>
+</section>
+
+<script>
+  const NAV_CONFIG = {
+    elements: {
+      navBackground: document.getElementById('nav-background'),
+      navBorderBackground: document.getElementById('nav-border-background'),
+      links: document.querySelectorAll('#nav-links li')
+    },
+    links: [
+      { id: 'home', href: '/' },
+      { id: 'about', href: '/about' },
+      { id: 'contact', href: '/contact' }
+    ]
+  };
+
+  const StyleUpdater = {
+    updateElementStyles(element: HTMLElement | null, rect: DOMRect | undefined, includeOpacity = false) {
+      if (!element || !rect) return;
+      
+      const { top, left, width, height } = rect;
+      element.style.setProperty('--nav-width', `${width}px`);
+      element.style.setProperty('--nav-top', `${top}px`);
+      element.style.setProperty('--nav-left', `${left}px`);
+      
+      if (includeOpacity) {
+        element.style.setProperty('--nav-height', `${height}px`);
+        element.style.setProperty('--nav-opacity', '1');
+      }
+    },
+
+    getElementRect(element: Element | null) {
+      return element?.getBoundingClientRect();
+    }
+  };
+
+  const NavigationManager = {
+    init() {
+      this.setupInitialState();
+      this.bindEvents();
+      this.handleResize();
+    },
+
+    setupInitialState() {
+      const activeLink = NAV_CONFIG.links.find(link => link.href === window.location.pathname);
+      if (!activeLink) return;
+
+      const linkElement = document.getElementById(activeLink.id);
+      if (!linkElement) return;
+
+      const rect = StyleUpdater.getElementRect(linkElement);
+      StyleUpdater.updateElementStyles(NAV_CONFIG.elements.navBackground, rect, true);
+      StyleUpdater.updateElementStyles(NAV_CONFIG.elements.navBorderBackground, rect);
+    },
+
+    bindEvents() {
+      NAV_CONFIG.elements.links.forEach(link => {
+        link.addEventListener('click', () => {
+          const rect = StyleUpdater.getElementRect(link);
+          StyleUpdater.updateElementStyles(NAV_CONFIG.elements.navBackground, rect, true);
+        });
+        link.addEventListener('mouseenter', () => {
+          const rect = StyleUpdater.getElementRect(link);
+          StyleUpdater.updateElementStyles(NAV_CONFIG.elements.navBorderBackground, rect);
+        });
+      });
+    },
+
+    handleResize() {
+      window.addEventListener('resize', () => {
+        this.setupInitialState();
+      });
+    }
+  };
+
+  NavigationManager.init();
+</script>
+
+<style>
+  
+  #nav-border-background {
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  #nav-links:hover + #nav-border-background {
+    opacity: 1;
+  }
+  
+  #nav-links::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: -2;
+    border-radius: 9999px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  #nav-links:hover::before {
+    opacity: 1;
+  }
+
+  #nav-background {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+</style>
+
