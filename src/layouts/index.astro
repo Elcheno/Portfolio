@@ -1,6 +1,7 @@
 ---
-import "../styles/global.css";
+import "@styles/global.css";
 import { Navigation } from "@components/navigation";
+import { 	ViewTransitions } from 'astro:transitions';
 ---
 
 <html lang="en">
@@ -9,6 +10,7 @@ import { Navigation } from "@components/navigation";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<ViewTransitions />
 		<title>Rubén Castro</title>
 	</head>
 	<body>
@@ -16,3 +18,10 @@ import { Navigation } from "@components/navigation";
     <slot />
 	</body>
 </html>
+
+
+<style>
+	body {
+		height: 200vh;
+	}
+</style>

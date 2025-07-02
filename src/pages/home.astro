@@ -1,4 +1,115 @@
 ---
+import ImagePortfolio from "@assets/img/IMG_2539.webp";
 ---
 
-<h1 class="text-red-500">Home</h1>
+<main class="mx-20">
+  
+  <section class="h-screen grid grid-cols-4">
+    <div class="flex h-full justify-start items-center col-span-3">
+      <h1 class="text-[15vw] flex flex-col">
+        <span class="text-white">Rubén</span>
+        <span class="text-white pl-[10vw]">Castro</span>
+      </h1>
+    </div>
+    <div class="flex h-full flex-col justify-center items-center gap-5">
+      <img id="img_portfolio" src={ImagePortfolio.src} alt="Rubén Castro" width="100" height="100" />
+        <div
+        id="img_portfolio_bg"
+        class="absolute w-[1px] h-[1px] bg-white rounded-full" 
+        style={`
+          --bg-top: 0;
+          --bg-left: 0;
+          top: var(--bg-top);
+          left: var(--bg-left);
+        `}
+      ></div>
+      <h1 id="stack" class="text-[2vw] text-center relative text-wrap w-[15vw]">Full Stack Developer</h1>
+    </div>
+  </section>
+
+
+</main>
+
+<script>
+  const imgPortfolio = document.getElementById('img_portfolio');
+  const imgPortfolioBg = document.getElementById('img_portfolio_bg');
+
+  let animationId; // Para guardar el id de requestAnimationFrame
+
+  function startAnimation() {
+    if (!imgPortfolio || !imgPortfolioBg) return;
+
+    // Recalcula el centro y el radio
+    const rect = imgPortfolio.getBoundingClientRect();
+    const size = 12;
+    const offset = 0;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const radius = rect.width / 2 + offset;
+
+    imgPortfolioBg.style.position = 'fixed';
+    imgPortfolioBg.style.width = `${size}px`;
+    imgPortfolioBg.style.height = `${size}px`;
+
+    let angle = 0;
+
+    // Cancela la animación anterior si existe
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+    }
+
+    function animateCircle() {
+      const x = centerX + radius * Math.cos(angle) - size / 2;
+      const y = centerY + radius * Math.sin(angle) - size / 2;
+
+      imgPortfolioBg.style.left = `${x}px`;
+      imgPortfolioBg.style.top = `${y}px`;
+
+      angle += 0.005;
+      animationId = requestAnimationFrame(animateCircle);
+    }
+
+    animateCircle();
+  }
+
+  // Inicia la animación al cargar
+  startAnimation();
+
+  // Reinicia la animación al hacer resize
+  window.addEventListener('resize', startAnimation);
+</script>
+
+<style>
+  h1, h1 > * {
+    font-family: "Acorn", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+
+  img {
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5);
+    width: 22vw;
+    height: 22vw;
+    object-fit: cover;
+  }
+
+  #stack::before {
+    content: "Full Stack Developer";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 2.05vw;
+    color: white;
+    z-index: -1;
+  }
+
+  #img_portfolio_bg {
+    transition: transform 3s ease-in-out;
+  }
+
+  #img_portfolio:hover + #img_portfolio_bg {
+    transform: translateX(var(--bg-width));
+  }
+</style>
